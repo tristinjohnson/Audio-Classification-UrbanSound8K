@@ -12,12 +12,10 @@ import torchaudio.transforms
 from torch.utils.data import DataLoader, Dataset, random_split
 import torch.nn as nn
 from tqdm import tqdm
-from torchaudio import models
-from transformers import Wav2Vec2Model, Wav2Vec2ForCTC
 
 
 # define variables
-num_epochs = 40
+num_epochs = 20
 batch_size = 16
 learning_rate = 0.001
 num_outputs = 10
@@ -108,9 +106,6 @@ def random_time_shift(audio, shift_limit):
 
 
 # get a Mel Spectrogram from audio files
-# n_fft = number of Fast Fourier Transform - look this up
-# n_mel = number of mel filterbanks - look this up
-# hop_length = length of hop between STFT windows - look this up
 def mel_spectrogram(audio, num_mel=64, num_fft=1024, hop_len=None):
     waveform, sampling_rate = audio
     top_decibel = 80  # min negative cut-off in decibels (default is 80)
@@ -200,11 +195,6 @@ class UrbanSoundsDS(Dataset):
         return augment_spectrogram, class_id
 
 
-# first epoch train -> 0.3, val -> 0.35
-# last epoch (13) train -> 0.651, val -> 0.641
-# w/ extra layer
-# first epoch train -> 0.453, val -> 0.426
-# last epoch (13) train -> 0.879, val -> 0.8709
 # define the CNN architecture
 class AudioClassifier(nn.Module):
     def __init__(self):
@@ -233,8 +223,6 @@ class AudioClassifier(nn.Module):
         self.act = nn.ReLU()
         self.pool2 = nn.AdaptiveAvgPool2d(output_size=1)
         self.linear1 = nn.Linear(in_features=128, out_features=10)
-
-        # train acc - 0.46, val acc - 0.54
 
     # forward propogation
     def forward(self, x):
@@ -406,7 +394,6 @@ if __name__ == '__main__':
     # input training and validation data into Dataloaders
     train_dataloader = DataLoader(train, batch_size=batch_size, shuffle=True)
     validation_dataloader = DataLoader(validation, batch_size=batch_size, shuffle=False)
-    test_dataloader = DataLoader(test, batch_size=batch_size, shuffle=False)
 
     # train
     training_and_validation(train_dataloader, validation_dataloader)

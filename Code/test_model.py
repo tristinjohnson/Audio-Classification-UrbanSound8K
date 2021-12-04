@@ -15,8 +15,7 @@ import torch.nn as nn
 from tqdm import tqdm
 from sklearn.metrics import accuracy_score, f1_score
 import argparse
-import glob
-import os
+
 
 # define variables
 num_epochs = 2
@@ -110,9 +109,6 @@ def random_time_shift(audio, shift_limit):
 
 
 # get a Mel Spectrogram from audio files
-# n_fft = number of Fast Fourier Transform - look this up
-# n_mel = number of mel filterbanks - look this up
-# hop_length = length of hop between STFT windows - look this up
 def mel_spectrogram(audio, num_mel=64, num_fft=1024, hop_len=None):
     waveform, sampling_rate = audio
     top_decibel = 80  # min negative cut-off in decibels (default is 80)
@@ -202,6 +198,7 @@ class UrbanSoundsDS(Dataset):
         return augment_spectrogram, class_id, audio_file
 
 
+# define the CNN architecture
 class AudioClassifier(nn.Module):
     def __init__(self):
         super().__init__()
@@ -264,6 +261,8 @@ def testing_model(test_ds, load_model):
     # load model and criterion
     model, criterion = model_definition()
 
+    # either load user-generated model, or my best model
+    # this will default to model generated from training script
     if load_model == 'user_model':
         model.load_state_dict(torch.load('model_urbansounds8k.pt', map_location=device))
         print('\nLoading user-generated model!\n')
@@ -280,6 +279,10 @@ def testing_model(test_ds, load_model):
 
             for x_data, x_target, idx in test_ds:
                 x_data, x_target = x_data.to(device), x_target.to(device)
+
+                # normalize inputs
+                x_data_mean, x_data_std = x_data.mean(), x_data.std()
+                x_data = (x_data - x_data_mean) / x_data_std
 
                 output = model(x_data)
                 loss = criterion(output, x_target)
@@ -366,5 +369,3 @@ if __name__ == '__main__':
 
     # test the model
     testing_model(test_dataloader, args.model)
-
-# test acc using best model thus far (in Best_Model dir) -> 0.846565, f1 = 0.847486

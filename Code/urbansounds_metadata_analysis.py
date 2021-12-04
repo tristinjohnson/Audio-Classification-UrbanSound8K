@@ -8,8 +8,6 @@ import librosa
 import librosa.display
 import random
 import glob
-import torchaudio
-import torch
 from train_validate_model import load_file, convert_channels, standardize_audio, pad_audio_files, random_time_shift
 import warnings
 warnings.filterwarnings('ignore')
@@ -20,11 +18,11 @@ metadata = pd.read_csv('Data/urbansound8k/UrbanSound8K.csv')
 
 # output classes
 classes = metadata['class'].unique()
-print('\nUnique Classes: ', classes)
+print('\nUnique Classes: ', classes, '\n')
 
 # randomly get one row of each class and put into a df
 unique_audio = metadata.groupby(['class']).apply(lambda x: x.sample()).reset_index(drop=True)
-print(unique_audio)
+print('One row of each class from metadata: \n', unique_audio, '\n')
 
 # look at different sampling rates for the same audio file
 audios = glob.glob(os.path.join("Data/urbansound8k/*/*.wav"), recursive=True)
@@ -86,6 +84,7 @@ def get_more_info(file_name):
     return num_channels, sample_rate
 
 
+# add num_channels and sampling_rate to dataframe
 extra_data = [get_more_info(i) for i in metadata.slice_file_name]
 metadata[['num_channels', 'sampling_rate']] = pd.DataFrame(extra_data)
 
@@ -134,7 +133,7 @@ plt.xlabel('Time')
 plt.ylabel('Waveform')
 plt.show()
 
-# plot Mel Spectrogram
+# plot Mel Spectrogram (input to network)
 wv, sample_rate = librosa.load(audio)
 fig, ax = plt.subplots()
 s = librosa.feature.melspectrogram(y=wv, sr=sample_rate)
