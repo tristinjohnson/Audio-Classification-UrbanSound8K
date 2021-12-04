@@ -397,4 +397,3 @@ if __name__ == '__main__':
 
     # train
     training_and_validation(train_dataloader, validation_dataloader)
-
