@@ -366,7 +366,7 @@ def training_and_validation(train_ds, validation_ds):
 
         # if epoch validation accuracy is better than previous, save the model
         if model_acc > model_best_acc:
-            torch.save(model.state_dict(), 'best_model.pt')
+            torch.save(model.state_dict(), 'model_urbansounds8k.pt')
 
             if epoch == 0:
                 print('This model has been saved!\n')

@@ -261,7 +261,7 @@ def model_definition():
 def testing_model(test_ds):
     # load model and criterion
     model, criterion = model_definition()
-    model.load_state_dict(torch.load('Best_Model/best_model.pt', map_location=device))
+    model.load_state_dict(torch.load('model_urbansounds8k.pt', map_location=device))
 
     test_loss, steps_test, corr_pred_test, total_pred_test = 0, 0, 0, 0
     test_real_labels, test_pred, file_paths = [], [], []
