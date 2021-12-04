@@ -19,6 +19,7 @@ import librosa.display
 from sklearn.metrics import accuracy_score, f1_score
 from transformers import Wav2Vec2Model
 
+print('finally this is working!!!!')
 
 # define variables
 num_epochs = 1
