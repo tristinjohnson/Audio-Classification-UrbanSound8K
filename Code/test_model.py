@@ -199,47 +199,44 @@ class UrbanSoundsDS(Dataset):
         return augment_spectrogram, class_id, audio_file
 
 
-# define the CNN architecture
 class AudioClassifier(nn.Module):
     def __init__(self):
         super().__init__()
 
-        layers = []
-
-        # activation function
-        self.act = nn.ReLU()
-
         # first convolution layer
         self.conv1 = nn.Conv2d(2, 8, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2))
         self.batch1 = nn.BatchNorm2d(8)
-        layers += [self.conv1, self.act, self.batch1]
+        self.pad1 = nn.ZeroPad2d(2)
+        self.pool1 = nn.MaxPool2d(kernel_size=5, stride=2)
 
         # second convolution layer
         self.conv2 = nn.Conv2d(8, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
         self.batch2 = nn.BatchNorm2d(32)
-        layers += [self.conv2, self.act, self.batch2]
+        self.pad2 = nn.ZeroPad2d(2)
 
         # third convolution layer
         self.conv3 = nn.Conv2d(32, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
         self.batch3 = nn.BatchNorm2d(64)
-        layers += [self.conv3, self.act, self.batch3]
 
+        # fourth convolution layer
         self.conv4 = nn.Conv2d(64, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
         self.batch4 = nn.BatchNorm2d(128)
-        layers += [self.conv4, self.act, self.batch4]
 
-        # linear layer and adaptive pooling
-        self.pool = nn.AdaptiveAvgPool2d(output_size=1)
-        self.linear = nn.Linear(in_features=128, out_features=10)
-
-        self.convolution = nn.Sequential(*layers)
+        # activation func, linear layer, adaptive pooling
+        self.act = nn.ReLU()
+        self.pool2 = nn.AdaptiveAvgPool2d(output_size=1)
+        self.linear1 = nn.Linear(in_features=128, out_features=10)
 
     # forward propogation
     def forward(self, x):
-        x = self.convolution(x)
-        x = self.pool(x)
+        x = self.pool1(self.pad1(self.batch1(self.act(self.conv1(x)))))
+        x = self.pad2(self.batch2(self.act(self.conv2(x))))
+        x = self.batch3(self.act(self.conv3(x)))
+        x = self.batch4(self.act(self.conv4(x)))
+
+        x = self.pool2(x)
         x = x.view(x.shape[0], -1)
-        x = self.linear(x)
+        x = self.linear1(x)
 
         return x
 
@@ -348,4 +345,4 @@ if __name__ == '__main__':
     # test the model
     testing_model(test_dataloader)
 
-# test acc using best model thus far (in Best_Model dir) -->
+# test acc using best model thus far (in Best_Model dir)

@@ -1,4 +1,5 @@
 import opendatasets as od
+import os
 
 print('\n********************* DOWNLOADING urbansounds8k IN THIS DIRECTORY *********************\n')
 print('This Dataset is being directly downloaded from Kaggle.com. Please make sure you have a '
@@ -11,6 +12,11 @@ print('Run the following command to download the dataset and enter your Kaggle u
 data_url = 'https://www.kaggle.com/chrisfilo/urbansound8k'
 od.download(data_url)
 
-# need to add 'pip install opendatasets
-# need to add 'pip install torchaudio'
-# need to add 'pip install librosa'
+os.system("echo =================== Installing OpenDatasets for UrbanSound8K Data Download ===================")
+os.system("pip install opendatasets")
+
+os.system("echo =================== Installing TorchAudio for model execution ===================")
+os.system("pip install torchaudio")
+
+os.system("echo =================== Installing Librosa to load audio files ===================")
+os.system("pip install librosa")

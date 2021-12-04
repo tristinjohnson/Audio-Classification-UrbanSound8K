@@ -4,8 +4,6 @@ Final Project - UrbanSound8K
 DATS 6203 - Machine Learning II
 December 6, 2021
 """
-import numpy as np
-import matplotlib.pyplot as plt
 import random
 import pandas as pd
 import torch
@@ -14,13 +12,12 @@ import torchaudio.transforms
 from torch.utils.data import DataLoader, Dataset, random_split
 import torch.nn as nn
 from tqdm import tqdm
-import librosa
-import librosa.display
-from sklearn.metrics import accuracy_score, f1_score
-from transformers import Wav2Vec2Model
+from torchaudio import models
+from transformers import Wav2Vec2Model, Wav2Vec2ForCTC
+
 
 # define variables
-num_epochs = 1
+num_epochs = 20
 batch_size = 16
 learning_rate = 0.001
 num_outputs = 10
@@ -36,12 +33,6 @@ def load_file(audio_file):
     waveform, sampling_rate = torchaudio.load(audio_file)
 
     return waveform, sampling_rate
-
-
-"""plt.figure()
-wave, sr = librosa.load('/home/ubuntu/ML2/Final_Project/Data/fold1/99180-9-0-7.wav')
-librosa.display.waveplot(wave, sr=sr)
-plt.show()"""
 
 
 # convert all audio files with 1 audio channel to 2 channels (majority have 2 channels)
@@ -219,42 +210,42 @@ class AudioClassifier(nn.Module):
     def __init__(self):
         super().__init__()
 
-        layers = []
-
-        # activation function
-        self.act = nn.ReLU()
-
         # first convolution layer
         self.conv1 = nn.Conv2d(2, 8, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2))
         self.batch1 = nn.BatchNorm2d(8)
-        layers += [self.conv1, self.act, self.batch1]
+        self.pad1 = nn.ZeroPad2d(2)
+        self.pool1 = nn.MaxPool2d(kernel_size=5, stride=2)
 
         # second convolution layer
         self.conv2 = nn.Conv2d(8, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
         self.batch2 = nn.BatchNorm2d(32)
-        layers += [self.conv2, self.act, self.batch2]
+        self.pad2 = nn.ZeroPad2d(2)
 
         # third convolution layer
         self.conv3 = nn.Conv2d(32, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
         self.batch3 = nn.BatchNorm2d(64)
-        layers += [self.conv3, self.act, self.batch3]
 
+        # fourth convolution layer
         self.conv4 = nn.Conv2d(64, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
         self.batch4 = nn.BatchNorm2d(128)
-        layers += [self.conv4, self.act, self.batch4]
 
-        # linear layer and adaptive pooling
-        self.pool = nn.AdaptiveAvgPool2d(output_size=1)
-        self.linear = nn.Linear(in_features=128, out_features=10)
+        # activation func, linear layer, adaptive pooling
+        self.act = nn.ReLU()
+        self.pool2 = nn.AdaptiveAvgPool2d(output_size=1)
+        self.linear1 = nn.Linear(in_features=128, out_features=10)
 
-        self.convolution = nn.Sequential(*layers)
+        # train acc - 0.46, val acc - 0.54
 
     # forward propogation
     def forward(self, x):
-        x = self.convolution(x)
-        x = self.pool(x)
+        x = self.pool1(self.pad1(self.batch1(self.act(self.conv1(x)))))
+        x = self.pad2(self.batch2(self.act(self.conv2(x))))
+        x = self.batch3(self.act(self.conv3(x)))
+        x = self.batch4(self.act(self.conv4(x)))
+
+        x = self.pool2(x)
         x = x.view(x.shape[0], -1)
-        x = self.linear(x)
+        x = self.linear1(x)
 
         return x
 
@@ -267,14 +258,13 @@ def save_best_model(model):
 
 # create the model definition: model, optimizer, scheduler, criterion
 def model_definition():
-    #model = Wav2Vec2Model.from_pretrained('facebook/wav2vec2-base-960h')
 
     # define model
     model = AudioClassifier()
     model = model.to(device)
 
     # define optimizer, scheduler, criterion
-    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max', patience=0, verbose=True)
     criterion = nn.CrossEntropyLoss()
 
@@ -388,48 +378,10 @@ def training_and_validation(train_ds, validation_ds):
     print('Training and Validation complete!')
 
 
-def test_model(test_ds):
-    model, optimizer, scheduler, criterion = model_definition()
-    model.load_state_dict(torch.load('Best_Model/best_model.pt', map_location=device))
-
-    test_loss, steps_test, corr_pred_test, total_pred_test = 0, 0, 0, 0
-
-    # validating the model
-    with torch.no_grad():
-        with tqdm(total=len(test_ds), desc=f'Testing --> ') as pbar:
-            for x_data, x_target in test_ds:
-                x_data, x_target = x_data.to(device), x_target.to(device)
-
-                # normalize inputs
-                x_data_mean, x_data_std = x_data.mean(), x_data.std()
-                x_data = (x_data - x_data_mean) / x_data_std
-
-                optimizer.zero_grad()
-                output = model(x_data)
-                loss = criterion(output, x_target)
-
-                test_loss += loss.item()
-                steps_test += 1
-
-                _, prediction = torch.max(output, 1)
-
-                corr_pred_test += (prediction == x_target).sum().item()
-                total_pred_test += prediction.shape[0]
-
-                pbar.update(1)
-                pbar.set_postfix_str(f"Loss: {test_loss / steps_test:0.5f} "
-                                     f"--> Acc: {corr_pred_test / total_pred_test:0.5f}")
-
-    # output validation metrics
-    avg_loss_test = test_loss / len(test_ds)
-    acc_test = corr_pred_test / total_pred_test
-    print(f'Final Test Set --> Loss: {avg_loss_test:0.5f} --> Accuracy: {acc_test:0.5f}\n')
-
-
 # main
 if __name__ == '__main__':
     # use GPU if available
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     print('Device: ', device)
 
     # read excel file for more information
@@ -459,35 +411,3 @@ if __name__ == '__main__':
     # train
     training_and_validation(train_dataloader, validation_dataloader)
 
-    # test
-    #test_model(test_dataloader)
-
-
-"""test_file = '/home/ubuntu/ML2/Final_Project/Data/fold1/99180-9-0-7.wav'
-wav, sr = load_file(test_file)
-
-fig, axs = plt.subplots(1, 1)
-wav, sr = librosa.load(test_file)
-librosa.display.waveplot(wav, sr=sr)
-plt.show()
-
-print('Wave shape: ', wav.shape)
-print('Sample Rate: ', sr)
-
-wav, sr = standardize_audio(load_file(test_file), 44000)
-print('Wave shape: ', wav.shape)
-print('Sample Rate: ', sr)
-
-wav, sr = convert_channels((wav, sr), 1)
-print('Wave shape: ', wav.shape)
-print('Sample Rate: ', sr)
-
-# example of mel spectorgram
-spect = mel_spectrogram((wav, sr))
-new_spect = data_augmentation(spect)
-test = librosa.power_to_db(new_spect)
-spect = test.reshape(test.shape[1], test.shape[2])
-fig, axs = plt.subplots(1, 1)
-im = axs.imshow(spect, origin='lower')
-fig.colorbar(im, ax=axs)
-plt.show()"""

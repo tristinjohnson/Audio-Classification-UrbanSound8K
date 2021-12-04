@@ -90,3 +90,15 @@ def random_time_shift(audio, shift_limit):
 
     return waveform.roll(shift_amount), sample_rate
 
+
+
+# example of mel spectorgram
+"""spect = mel_spectrogram((wav, sr))
+new_spect = data_augmentation(spect)
+test = librosa.power_to_db(new_spect)
+spect = test.reshape(test.shape[1], test.shape[2])
+fig, axs = plt.subplots(1, 1)
+im = axs.imshow(spect, origin='lower')
+fig.colorbar(im, ax=axs)
+plt.show()"""
+
