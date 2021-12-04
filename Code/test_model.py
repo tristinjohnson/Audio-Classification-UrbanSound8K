@@ -14,6 +14,9 @@ from torch.utils.data import DataLoader, Dataset, random_split
 import torch.nn as nn
 from tqdm import tqdm
 from sklearn.metrics import accuracy_score, f1_score
+import argparse
+import glob
+import os
 
 # define variables
 num_epochs = 2
@@ -245,7 +248,6 @@ class AudioClassifier(nn.Module):
 def model_definition():
     # load the model from training
     model = AudioClassifier()
-    model.load_state_dict(torch.load('best_model.pt', map_location=device))
     model = model.to(device)
 
     # define criterion
@@ -258,14 +260,21 @@ def model_definition():
 
 
 # test the model
-def testing_model(test_ds):
+def testing_model(test_ds, load_model):
     # load model and criterion
     model, criterion = model_definition()
-    model.load_state_dict(torch.load('model_urbansounds8k.pt', map_location=device))
+
+    if load_model == 'user_model':
+        model.load_state_dict(torch.load('model_urbansounds8k.pt', map_location=device))
+        print('\nLoading user-generated model!\n')
+    else:
+        model.load_state_dict(torch.load('Best_Model/model_urbansounds8k.pt', map_location=device))
+        print('\nLoading my best model from \'Best_Model\' directory!\n')
 
     test_loss, steps_test, corr_pred_test, total_pred_test = 0, 0, 0, 0
     test_real_labels, test_pred, file_paths = [], [], []
 
+    # test the model
     with torch.no_grad():
         with tqdm(total=len(test_ds), desc="Test Set -> ") as pbar:
 
@@ -304,6 +313,12 @@ def testing_model(test_ds):
     results_df['real_labels'], results_df['predictions'] = real_labels, pred
     results_df['file_names'] = results_df['file_names'].map(lambda x: x.lstrip('Data/urbansound8k/'))
 
+    # map encoded classes to their real class name
+    class_labels = {0: 'air_conditioner', 1: 'car_horn', 2: 'children_playing', 3: 'dog_bark', 4: 'drilling', 5: 'engine_idling', 6: 'gun_shot', 7: 'jackhammer', 8: 'siren', 9: 'street_music'}
+    results_df['real_labels'] = results_df.real_labels.replace(class_labels)
+    results_df['predictions'] = results_df.predictions.replace(class_labels)
+
+    # save results to excel file
     results_df.to_excel('Results/model_results.xlsx', index=False)
 
     # define more metrics
@@ -342,7 +357,14 @@ if __name__ == '__main__':
     # input testing data into DataLoader
     test_dataloader = DataLoader(test, batch_size=batch_size, shuffle=False)
 
-    # test the model
-    testing_model(test_dataloader)
+    # either load my custom model or your own trained model
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model", default="user_model", type=str,
+                        help="enter which model you would like to use (\'user_model\': your generated model, "
+                             "\'pretrained_model\': my custom model in Best_Models)")
+    args = parser.parse_args()
 
-# test acc using best model thus far (in Best_Model dir)
+    # test the model
+    testing_model(test_dataloader, args.model)
+
+# test acc using best model thus far (in Best_Model dir) -> 0.846565, f1 = 0.847486

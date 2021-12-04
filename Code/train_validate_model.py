@@ -17,7 +17,7 @@ from transformers import Wav2Vec2Model, Wav2Vec2ForCTC
 
 
 # define variables
-num_epochs = 20
+num_epochs = 40
 batch_size = 16
 learning_rate = 0.001
 num_outputs = 10
