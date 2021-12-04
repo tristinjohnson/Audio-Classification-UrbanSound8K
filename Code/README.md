@@ -20,19 +20,17 @@ After training the model, now you can test the performance of the model. To do s
 
     python3 test_model.py
     
-This will test the model that was generated from the training script above. Once you have tested the model, an excel file will be generated in the 'Results' folder that displays the results of the model. There are 3 columns 'file_names', 'real_labels', 'predictions'. Here you can see how well your model predicted certain classes of the audio files. 
+There are two options when running the 'test_model.py' script. There is a '--model' flag where you can either use your generated model from the training script in step 2, or you can use my best and most accurate model I was able to achieve. If you don't use the '--model' flag, the script will default to your generated model from training. See below examples on how to use:
 
-
-# Extras for UrbanSounds8k Final Project (Optional)
-
-## 1. Metadata Analysis
-
-In order to analyze information about the dataset, you can run the 'wav_analysis.py' script. This will display multiple analysis regarding the data, such as, the class information, what the audio files look like (in terms of waveform and sample rate), all the shapes of the audio files after each transformation, a Mel Spectrogram, and moore.
-
-## 2. Test Your Best Model vs. My Best Model
-
-In the Best_Model directory, I have my best model from training. If you would like to use this model for testing, change the code in the 'train_model.py' on line 264 to:
-
-    model.load_state_dict(torch.load('Best_Model/model_urbansounds8k.pt', map_location=device))
+    # to use your model generated from training
+    python3 test_model.py --model user_model
     
-Feel free to change the architecture of the model in the training script and see if you can create a model that beats my accuracy score!
+    # to use my best and most accurate model
+    python3 test_model.py --model pretrained_model
+
+This will test the model that was generated from the training script above. Once you have tested the model, an excel file will be generated in the 'Results' folder that displays the results of the model. There are 3 columns 'file_names', 'real_labels', 'predictions'. Here you can see how well your model predicted certain classes of the audio files. In regards to my model, feel free to change the architecture of the training script and see if you can get a better accuracy score than my model!
+
+## 4. UrbanSounds8K Metadata Analysis
+
+In order to analyze information about the dataset, you can run the 'urbansounds_metadata_analysis.py' script. This will display multiple analysis regarding the data, such as the class information, what the audio files look like (in terms of waveform and sample rate), what different sampling rates look like, and some transformations/augmentations that I used to train my model!
+
