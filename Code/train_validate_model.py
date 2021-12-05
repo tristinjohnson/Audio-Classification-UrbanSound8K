@@ -4,6 +4,7 @@ Final Project - UrbanSound8K
 DATS 6203 - Machine Learning II
 December 6, 2021
 """
+# import required packages
 import random
 import pandas as pd
 import torch
@@ -12,6 +13,18 @@ import torchaudio.transforms
 from torch.utils.data import DataLoader, Dataset, random_split
 import torch.nn as nn
 from tqdm import tqdm
+
+##################################################################################################
+#
+# This is the script to train, validate, and save your best model. Before running, make sure you
+# have downloaded the data using the 'download_data.py' script inside of the Data directory.
+# Furthermore, do not move the data outside of the Data directory, or this script will fail.
+# After running this file, your best model will be save as 'model_urbansounds8k.pt' in this
+# directory, along with a 'model_summary.txt', which shows the model architecture. The model
+# will only be overwritten if your validation accuracy score beat the previous epoch's
+# validation score. Other than that, have fun!
+#
+##################################################################################################
 
 
 # define variables

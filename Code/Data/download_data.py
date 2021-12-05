@@ -1,4 +1,19 @@
+"""
+Tristin Johnson
+Final Project - UrbanSound8K
+DATS 6203 - Machine Learning II
+December 6, 2021
+"""
 import os
+
+##################################################################################################
+#
+# This file is to download the dataset UrbanSounds8K from kaggle.com. This script will also
+# download import packages needed to run the other files. After forking the repository, make sure
+# you run this script in the Data directory, as the data will generate in this folder, and the
+# path to the data in the training/testing script is linked to this directory.
+#
+##################################################################################################
 
 os.system("echo =================== Installing OpenDatasets for UrbanSound8K Data Download ===================")
 os.system("pip install opendatasets")

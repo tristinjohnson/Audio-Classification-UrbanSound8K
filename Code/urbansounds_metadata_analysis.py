@@ -1,3 +1,10 @@
+"""
+Tristin Johnson
+Final Project - UrbanSound8K
+DATS 6203 - Machine Learning II
+December 6, 2021
+"""
+# import required packages
 import pandas as pd
 import os
 import struct
@@ -11,6 +18,16 @@ from train_validate_model import (load_file, convert_channels, standardize_audio
                                   random_time_shift, mel_spectrogram, data_augmentation)
 import warnings
 warnings.filterwarnings('ignore')
+
+##################################################################################################
+#
+# This file contains a metadata analysis of the UrbanSounds8k dataset. To run this code, make sure
+# you have the data downloaded in the Data directory and make sure the 'train_validate_model.py'
+# file is in the same directory as this one, as this script uses functions from that file.
+# This script will output multiple different plots regarding the dataset itself, along with all
+# of the preprocessing steps I used in training the model. Have fun!
+#
+##################################################################################################
 
 
 # get path of file

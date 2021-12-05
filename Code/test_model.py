@@ -4,6 +4,7 @@ Final Project - UrbanSound8K
 DATS 6203 - Machine Learning II
 December 6, 2021
 """
+# import required packages
 import random
 import pandas as pd
 import numpy as np
@@ -15,6 +16,15 @@ import torch.nn as nn
 from tqdm import tqdm
 from sklearn.metrics import accuracy_score
 import argparse
+
+##################################################################################################
+#
+# This is the script to test the performance of the model generated from the the training script.
+# To run this script correctly, make sure your model is in the same directory as this file.
+# The script will output your accuracy results, along with an excel file containing all of
+# your model predictions. Have fun!
+#
+##################################################################################################
 
 
 # define variables
