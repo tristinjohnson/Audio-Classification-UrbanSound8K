@@ -9,15 +9,15 @@ For my final project, I decided to work with a Deep Speech topic. I have always 
 
 ### 1. Code
 
-The Code directory contains all of the code that I wrote to complete the project. In there, you will find a training script, a testing script, an analysis script, and even more information regarding the implementation and execution of a Deep Speech problem. To see the code, please click [here](https://github.com/tristinjohnson/Final-Project-GroupX/tree/main/Code).
+The Code directory contains all of the code that I wrote to complete the project. In there, you will find a training script, a testing script, an analysis script, and even more information regarding the implementation and execution of a Deep Speech problem. To see the code, please click [here](https://github.com/tristinjohnson/Final-Project-Group2/tree/main/Code).
 
 ### 2. Final Project Proposal
 
-This directory contains a my proposal for the final project. Included is a pdf file outlining multiple aspects of the project, along with what I set out to achieve. To view the proposal, click [here](https://github.com/tristinjohnson/Final-Project-GroupX/blob/main/Group-Proposal/Final%20Project%20Group%20Proposal.pdf).
+This directory contains a my proposal for the final project. Included is a pdf file outlining multiple aspects of the project, along with what I set out to achieve. To view the proposal, click [here](https://github.com/tristinjohnson/Final-Project-Group2/blob/main/Group-Proposal/Final%20Project%20Group%20Proposal.pdf).
 
 ### 3. Final Project Presentation
 
-This directory contains my presentation of the project, and includes an overview of the project as a whole. From data preprocessing to my results after testing the model, to multiple diagrams and graphs to display, it is all there. To view the presentation, click [here](https://github.com/tristinjohnson/Final-Project-GroupX/blob/main/Final-Group-Presentation/Final%20Project%20Presentation%20-%20Group%202.pdf).
+This directory contains my presentation of the project, and includes an overview of the project as a whole. From data preprocessing to my results after testing the model, to multiple diagrams and graphs to display, it is all there. To view the presentation, click [here](https://github.com/tristinjohnson/Final-Project-Group2/blob/main/Final-Group-Presentation/Final%20Project%20Presentation%20-%20Group%202.pdf).
 
 ### 4. Final Project Report
 
