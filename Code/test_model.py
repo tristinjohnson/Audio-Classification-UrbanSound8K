@@ -13,7 +13,7 @@ import torchaudio.transforms
 from torch.utils.data import DataLoader, Dataset, random_split
 import torch.nn as nn
 from tqdm import tqdm
-from sklearn.metrics import accuracy_score, f1_score
+from sklearn.metrics import accuracy_score
 import argparse
 
 
@@ -317,19 +317,18 @@ def testing_model(test_ds, load_model):
     results_df['file_names'] = results_df['file_names'].map(lambda x: x.lstrip('Data/urbansound8k/'))
 
     # map encoded classes to their real class name
-    class_labels = {0: 'air_conditioner', 1: 'car_horn', 2: 'children_playing', 3: 'dog_bark', 4: 'drilling', 5: 'engine_idling', 6: 'gun_shot', 7: 'jackhammer', 8: 'siren', 9: 'street_music'}
+    class_labels = {0: 'air_conditioner', 1: 'car_horn', 2: 'children_playing', 3: 'dog_bark', 4: 'drilling',
+                    5: 'engine_idling', 6: 'gun_shot', 7: 'jackhammer', 8: 'siren', 9: 'street_music'}
     results_df['real_labels'] = results_df.real_labels.replace(class_labels)
     results_df['predictions'] = results_df.predictions.replace(class_labels)
 
     # save results to excel file
     results_df.to_excel('Results/model_results.xlsx', index=False)
 
-    # define more metrics
+    # define accuracy metrics
     acc_metric = accuracy_score(real_labels, pred)
-    f1_metric = f1_score(real_labels, pred, average='weighted')
 
     print(f'Final Accuracy: {acc_metric:0.6f}')
-    print(f'F1 Score (weighted): {f1_metric:0.6f}')
 
 
 # main
