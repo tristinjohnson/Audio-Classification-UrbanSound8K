@@ -9,3 +9,5 @@ The test script will default to the user generated model that was saved after ru
 
     # use user generated model
     python3 test_model.py --model user_model
+
+You will also see a 'model_summary.txt' file, which contains a summary of the architecture I used to implement the neural network.
