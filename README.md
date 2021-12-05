@@ -9,7 +9,7 @@ For my final project, I decided to work with a Deep Speech topic. I have always 
 
 ### 1. Code
 
-The Code directory contains all of the code that I wrote to complete the project. In there, you will find a training script, a testing script, an analysis script, and even more information regarding the implementation and execution of a Deep Speech problem. To see the code, please click [here](https://github.com/tristinjohnson/Final-Project-Group2/tree/main/Code).
+The Code directory contains all of the code that I wrote to complete the project. In there, you will find a training script, a testing script, an analysis script, and even more information regarding the implementation and execution of a Deep Speech problem. To see the code, click [here](https://github.com/tristinjohnson/Final-Project-Group2/tree/main/Code).
 
 ### 2. Final Project Proposal
 
@@ -21,4 +21,4 @@ This directory contains my presentation of the project, and includes an overview
 
 ### 4. Final Project Report
 
-This directory contains my final project report, which includes an in-depth analysis and workflow of the project with every step explained. Outlined in the report is an introduction, a description of the dataset, data analysis, data preprocessing, my neural network architecture, data augmentation, training and testing, results, a conclusion, and all the references I used to complete the project. 
+This directory contains my final project report, which includes an in-depth analysis and workflow of the project with every step explained. Outlined in the report is an introduction, a description of the dataset, data analysis, data preprocessing, my neural network architecture, data augmentation, training and testing, results, a conclusion, and all the references I used to complete the project. To view the report, click [here](https://github.com/tristinjohnson/Final-Project-Group2/blob/main/Final-Group-Project-Report/Final%20Project%20Report%20-%20Group%202.pdf).
