@@ -12,54 +12,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-# load metadata on urbansounds
-metadata = pd.read_csv('Data/urbansound8k/UrbanSound8K.csv')
-
-# output classes
-classes = metadata['class'].unique()
-print('\nUnique Classes: ', classes, '\n')
-
-# randomly get one row of each class and put into a df
-unique_audio = metadata.groupby(['class']).apply(lambda x: x.sample()).reset_index(drop=True)
-print('One row of each class from metadata: \n', unique_audio, '\n')
-
-# look at different sampling rates for the same audio file
-audios = glob.glob(os.path.join("Data/urbansound8k/*/*.wav"), recursive=True)
-audio = random.choice(audios)
-
-# look at number of instances for each class and plot
-instances = metadata['class'].value_counts()
-
-plt.figure(figsize=(10, 6))
-sns.barplot(x=instances.values, y=instances.index, orient='h')
-plt.title('Total Number of Audio Files per Class')
-plt.xlabel('Count')
-plt.show()
-
-# plot an audio file with different frequencies
-fig, axs = plt.subplots(2, 2, figsize=(12, 9))
-fig.suptitle('Sampling of Audio File with Different Sampling Rates')
-axs = np.reshape(axs, -1)
-diff_sr = [100, 2500, 20000, 44100]
-for ax, sr in zip(axs, diff_sr):
-    data, sample_rate = librosa.load(audio, sr=sr)
-    librosa.display.waveplot(data, sr=sample_rate, ax=ax)
-    ax.set_title(f'Sampling Rate of {sr} Hz')
-
-plt.show()
-
-# plot each row as a waveplot using librosa
-fig, axs = plt.subplots(5, 2, figsize=(15, 8), constrained_layout=True)
-axs = np.reshape(axs, -1)
-
-for (idx, row), ax in zip(unique_audio.iterrows(), axs):
-    ax.set_title(row.values[-1])
-    data, sr = librosa.load(f'Data/urbansound8k/fold{row.values[-3]}/' + row.values[0])
-    _ = librosa.display.waveplot(data, ax=ax)
-
-plt.show()
-
-
 # get path of file
 def get_path(file_name):
     name = metadata[metadata['slice_file_name'] == file_name]
@@ -83,9 +35,56 @@ def get_more_info(file_name):
     return num_channels, sample_rate
 
 
+# load metadata on urbansounds
+metadata = pd.read_csv('Data/urbansound8k/UrbanSound8K.csv')
+
 # add num_channels and sampling_rate to dataframe
 extra_data = [get_more_info(i) for i in metadata.slice_file_name]
 metadata[['num_channels', 'sampling_rate']] = pd.DataFrame(extra_data)
+
+# output classes
+classes = metadata['class'].unique()
+print('\nUnique Classes: ', classes, '\n')
+
+# randomly get one row of each class and put into a df
+unique_audio = metadata.groupby(['class']).apply(lambda x: x.sample()).reset_index(drop=True)
+print('One row of each class from metadata: \n', unique_audio, '\n')
+
+# look at different sampling rates for the same audio file
+audios = glob.glob(os.path.join("Data/urbansound8k/*/*.wav"), recursive=True)
+audio = random.choice(audios)
+
+# look at number of instances for each class and plot
+instances = metadata['class'].value_counts()
+
+plt.figure(figsize=(10, 6))
+sns.barplot(x=instances.values, y=instances.index, orient='h')
+plt.title('Total Number of Audio Files per Class')
+plt.xlabel('Count')
+plt.show()
+
+# plot an audio file with different sample rates
+fig, axs = plt.subplots(2, 2, figsize=(12, 9))
+fig.suptitle('Sampling of Audio File with Different Sampling Rates')
+axs = np.reshape(axs, -1)
+diff_sr = [100, 2500, 20000, 44100]
+for ax, sr in zip(axs, diff_sr):
+    data, sample_rate = librosa.load(audio, sr=sr)
+    librosa.display.waveplot(data, sr=sample_rate, ax=ax)
+    ax.set_title(f'Sampling Rate of {sr} Hz')
+
+plt.show()
+
+# plot each row as a waveplot using librosa
+fig, axs = plt.subplots(5, 2, figsize=(15, 8), constrained_layout=True)
+axs = np.reshape(axs, -1)
+
+for (idx, row), ax in zip(unique_audio.iterrows(), axs):
+    ax.set_title(row.values[-1])
+    data, sr = librosa.load(f'Data/urbansound8k/fold{row.values[-5]}/' + row.values[0])
+    _ = librosa.display.waveplot(data, ax=ax)
+
+plt.show()
 
 # plot how many audio files have a certain sample rate
 sample_rate_totals = metadata['sampling_rate'].value_counts()
@@ -108,10 +107,32 @@ plt.ylabel('Count')
 plt.show()
 
 # get new waveform and sample rates using functions from 'train_validate_model.py'
+#waveform, sr = load_file('/home/ubuntu/ML2/Final_Project/Code/Data/urbansound8k/fold5/148841-6-2-0.wav')
 waveform, sr = load_file(audio)
+
+# convert audio to 2 channels and plot
 waveform, sr = convert_channels((waveform, sr), 2)
+plt.figure(figsize=(9, 5))
+plt.plot(waveform[0].numpy(), color='green', label='1st Channel')
+plt.plot(waveform[1].numpy(), color='blue', label='2nd Channel')
+plt.title('Converting Audio Files to 2 Channels')
+plt.legend()
+plt.show()
+
+# standardize audio to 44100 Hz and plot
 waveform, sr = standardize_audio((waveform, sr), 44100)
+fig, ax = plt.subplots(figsize=(9, 5))
+librosa.display.waveplot(waveform.numpy(), sr=sr, ax=ax, color='blue')
+plt.title('Standardize Audio to 44100 Hz')
+plt.show()
+
+# add padding to audio files to make them all same length (4 seconds)
 waveform, sr = pad_audio_files((waveform, sr), 4000)
+fig, ax = plt.subplots(figsize=(9, 5))
+librosa.display.waveplot(waveform.numpy(), sr=sr, ax=ax, color='green')
+plt.title('Audio with Padding (4 seconds)')
+plt.show()
+
 
 # plot before random time shift
 plt.figure(figsize=(9, 5))
