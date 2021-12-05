@@ -40,22 +40,22 @@ def get_more_info(file_name):
 metadata = pd.read_csv('Data/urbansound8k/UrbanSound8K.csv')
 
 # add num_channels and sampling_rate to dataframe
-#extra_data = [get_more_info(i) for i in metadata.slice_file_name]
-#metadata[['num_channels', 'sampling_rate']] = pd.DataFrame(extra_data)
+extra_data = [get_more_info(i) for i in metadata.slice_file_name]
+metadata[['num_channels', 'sampling_rate']] = pd.DataFrame(extra_data)
 
 # output classes
-#classes = metadata['class'].unique()
-#print('\nUnique Classes: ', classes, '\n')
+classes = metadata['class'].unique()
+print('\nUnique Classes: ', classes, '\n')
 
 # randomly get one row of each class and put into a df
-#unique_audio = metadata.groupby(['class']).apply(lambda x: x.sample()).reset_index(drop=True)
-#print('One row of each class from metadata: \n', unique_audio, '\n')
+unique_audio = metadata.groupby(['class']).apply(lambda x: x.sample()).reset_index(drop=True)
+print('One row of each class from metadata: \n', unique_audio, '\n')
 
 # look at different sampling rates for the same audio file
 audios = glob.glob(os.path.join("Data/urbansound8k/*/*.wav"), recursive=True)
 audio = random.choice(audios)
 
-"""# look at number of instances for each class and plot
+# look at number of instances for each class and plot
 instances = metadata['class'].value_counts()
 
 plt.figure(figsize=(10, 6))
@@ -105,10 +105,9 @@ sns.barplot(x=num_channels_total.index, y=num_channels_total.values)
 plt.title('Total Number of Audio Files Grouped by Channels')
 plt.xlabel('Num Channels')
 plt.ylabel('Count')
-plt.show()"""
+plt.show()
 
 # get new waveform and sample rates using functions from 'train_validate_model.py'
-#waveform, sr = load_file('/home/ubuntu/ML2/Final_Project/Code/Data/urbansound8k/fold5/148841-6-2-0.wav')
 waveform, sr = load_file(audio)
 
 # convert audio to 2 channels and plot
@@ -118,21 +117,21 @@ plt.plot(waveform[0].numpy(), color='green', label='1st Channel')
 plt.plot(waveform[1].numpy(), color='blue', label='2nd Channel')
 plt.title('Converting Audio Files to 2 Channels')
 plt.legend()
-#plt.show()
+plt.show()
 
 # standardize audio to 44100 Hz and plot
 waveform, sr = standardize_audio((waveform, sr), 44100)
 fig, ax = plt.subplots(figsize=(9, 5))
 librosa.display.waveplot(waveform.numpy(), sr=sr, ax=ax, color='blue')
 plt.title('Standardize Audio to 44100 Hz')
-#plt.show()
+plt.show()
 
 # add padding to audio files to make them all same length (4 seconds)
 waveform, sr = pad_audio_files((waveform, sr), 4000)
 fig, ax = plt.subplots(figsize=(9, 5))
 librosa.display.waveplot(waveform.numpy(), sr=sr, ax=ax, color='green')
 plt.title('Audio with Padding (4 seconds)')
-#plt.show()
+plt.show()
 
 
 # plot before random time shift
@@ -141,7 +140,7 @@ librosa.display.waveplot(waveform.numpy(), sr)
 plt.title(f'Wave Plot Before Random Time Shift')
 plt.xlabel('Time')
 plt.ylabel('Waveform')
-#plt.show()
+plt.show()
 
 # add random time shift
 waveform, sr = random_time_shift((waveform, sr), 0.5)
@@ -152,20 +151,11 @@ librosa.display.waveplot(waveform.numpy(), sr)
 plt.title('Wave Plot After Random Time Shift')
 plt.xlabel('Time')
 plt.ylabel('Waveform')
-#plt.show()
+plt.show()
 
+# convert data to a Mel Spectrogram
 spect = mel_spectrogram((waveform, sr), num_mel=128)
 spect_1d = spect[0].numpy()
-
-"""# plot Mel Spectrogram (input to network)
-wv, sample_rate = librosa.load(audio)
-fig, ax = plt.subplots()
-s = librosa.feature.melspectrogram(y=wv, sr=sample_rate)
-img = librosa.display.specshow(librosa.power_to_db(s, ref=np.max), x_axis='time', y_axis='linear', ax=ax)
-ax.set(title='Mel Spectrogram')
-fig.colorbar(img, ax=ax, format='%+2.f dB')
-plt.show()
-"""
 
 fig, ax = plt.subplots(figsize=(8, 6))
 img = librosa.display.specshow(spect_1d, x_axis='time', y_axis='linear', sr=sr, ax=ax)
@@ -173,7 +163,7 @@ ax.set(title='Convert Audio to Mel Spectrogram')
 fig.colorbar(img, ax=ax, format='%+2.0f dB')
 plt.show()
 
-
+# augment the mel spectrogram by adding time and frequency masking
 aug_spect = data_augmentation(spect)
 aug_spect_1d = aug_spect[0].numpy()
 
