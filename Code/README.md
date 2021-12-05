@@ -34,3 +34,5 @@ This will test the model that was generated from the training script above. Once
 
 In order to analyze information about the dataset, you can run the 'urbansounds_metadata_analysis.py' script. This will display multiple analysis regarding the data, such as the class information, what the audio files look like (in terms of waveform and sample rate), what different sampling rates look like, and some transformations/augmentations that I used to train my model!
 
+Make sure to keep the metadata analysis file in the same directory as the 'train_validate_model.py' file as the analysis uses multiple preprocessing functions from the training file. 
+
