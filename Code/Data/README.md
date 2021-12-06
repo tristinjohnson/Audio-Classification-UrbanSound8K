@@ -1,6 +1,6 @@
 # Download UrbanSounds8K Dataset
 
-In order to download the data into this directory, simply run the python script in this directory:
+In order to download the data into this directory, simply run the python script in this directory (preferably in your terminal):
 
     python3 download_data.py
     
