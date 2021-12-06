@@ -13,7 +13,7 @@ Furthermore, make sure you have Pytorch installed in your local IDE. The above s
 
     opendatasets, librosa, torchaudio
     
-***** THIS SCRIPT MAY FAIL WHEN YOU FIRST RUN IT! *****
+## ***** THIS SCRIPT MAY FAIL WHEN YOU FIRST RUN IT! *****
 
 Since you are downloading a package that is directly used in the download file (opendatasets), you may have to run the script a second time in order to successfully download the data.
     
