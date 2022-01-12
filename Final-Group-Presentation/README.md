@@ -1,3 +1,3 @@
-# Final Project Presentation
+# Project Presentation
 
-This is the presentation for my final project on UrbanSounds8K as a pdf.
+This is the presentation for my project on UrbanSounds8K as a pdf.
